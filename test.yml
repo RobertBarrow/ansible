@@ -34,6 +34,11 @@
       group: root
       mode: 0700
 
+  - name: install pip
+    apt:
+      name: python-pip
+      state: latest
+
   - name: run python script
     command: python sb.py
     args:
