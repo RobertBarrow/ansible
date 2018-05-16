@@ -1,0 +1,78 @@
+https://www.ansible.com/resources/webinars-training/introduction-to-ansible
+
+UBUNTU SERVER 
+docker run -it --name ubuntu-server ubuntu
+unminimize 
+apt update
+apt install -y openssh-server nano python 
+nano /etc/ssh/ssh_config # edit ssh configuration
+PermitRootLogin yes # allow root to login via ssh
+PasswordAuthentication yes # allow password authentication
+PermitEmptyPasswords no
+service ssh restart # restart ssh daemon
+passwd # change root password e.g. "test"
+
+ANSIBLE CLIENT
+docker run -it --name ansible-client ubuntu
+apt update
+apt install -y inetutils-ping less nano python python-pip sshpass
+pip install ansible 'docker-py>=1.7.0'
+mkdir -m777 /etc/ansible
+vim /etc/ansible/hosts
+[docker]
+ubuntu-server ansible-host=172.17.0.3
+ssh 172.17.0.3 # accept fingerprint, login and disconnect
+ansible docker -i hosts -m ping -k
+ansible docker -i hosts -m shell -a "apt update" -k
+
+
+nano test.yml # test playbook
+---
+- name: test playbook
+  hosts: docker
+  tasks:
+
+  - name: install git
+    apt:
+      name: git
+      state: latest
+
+  - name: add cwp dir
+    file:
+      path: /cwp
+      state: directory
+      mode: 0750
+
+  - name: git clone cwp repo
+    git:
+      repo: https://github.com/RobertBarrow/cwp.git
+      dest: /cwp
+      version: HEAD
+      force: yes
+  
+  - name: rename example CSV file
+    copy:
+      src: /cwp/python/CWP_example.CSV
+      dest: /cwp/python/CWP.CSV
+      remote_src: yes
+      
+  - name: change python script file ownership, group and mode.
+    file:
+      path: /cwp/python/sb.py
+      owner: root
+      group: root
+      mode: 0700
+
+  - name: run python script
+    command: python sb.py
+    args:
+      chdir: /cwp/python/
+      creates: /cwp/python/OUT.CSV
+
+  - name: download OUT.CSV 
+    fetch:
+      src: /cwp/python/OUT.CSV
+      dest: OUT.CSV
+
+ansible-playbook -i hosts test.yml -k
+
