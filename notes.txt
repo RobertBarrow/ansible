@@ -12,21 +12,99 @@ PermitEmptyPasswords no
 service ssh restart # restart ssh daemon
 passwd # change root password e.g. "test"
 
-ANSIBLE CLIENT
-docker run -it --name ansible-client ubuntu
-apt update
-apt install -y inetutils-ping less nano python python-pip sshpass
-pip install ansible 'docker-py>=1.7.0'
-mkdir -m777 /etc/ansible
-vim /etc/ansible/hosts
-[docker]
-ubuntu-server ansible-host=172.17.0.3
-ssh 172.17.0.3 # accept fingerprint, login and disconnect
-ansible docker -i hosts -m ping -k
-ansible docker -i hosts -m shell -a "apt update" -k
+Dockerfile for UBUNTU SERVER
+----------------------------
+$ cat Dockerfile.ubuntu-server
+  FROM ubuntu:latest
+
+  RUN apt-get update && apt-get install -y openssh-server python
+  RUN mkdir /var/run/sshd
+  RUN echo 'root:ansible' | chpasswd
+  RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+  # SSH login fix. Otherwise user is kicked off after login
+  RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+
+  ENV NOTVISIBLE "in users profile"
+  RUN echo "export VISIBLE=now" >> /etc/profile
+
+  EXPOSE 22
+  CMD ["/usr/sbin/sshd", "-D"]
+
+Docker file for ANSIBLE CLIENT 
+------------------------------
+$ cat Dockerfile.ubuntu-ansible
+  FROM ubuntu:latest
+
+  RUN apt update && apt install -y python python-pip sshpass
+  RUN pip install ansible
+  RUN mkdir /etc/ansible/
+  RUN echo '[local]\nlocalhost\n' > /etc/ansible/hosts
+
+  EXPOSE 22
+  CMD ["/bin/bash"]
+
+Building the UBUNTU SERVER docker image
+----------------------------------------
+  $ docker build -f Dockerfile.ubuntu-server --force-rm -q --rm -t robertbarrow/ubuntu-server:latest .
+
+Pusing the latest UBUNTU SERVER docker image to Docker Hub
+-----------------------------------------------------------
+  $ docker push robertbarrow/ubuntu-server
+
+Running the latest UBUNTU SERVER docker image
+----------------------------------------------
+  $ docker run -d --name ubuntu-server robertbarrow/ubuntu-server
+
+Obtaining the IP address of the UBUNTU SERVER
+---------------------------------------------
+  $ docker inspect --format '{{ .NetworkSettings.IPAddress }}' ubuntu-server
+  172.17.0.2
+  
+Building the ANSIBLE CLIENT docker image
+----------------------------------------
+  $ docker build -f Dockerfile.ubuntu-ansible --force-rm -q --rm -t robertbarrow/ubuntu-ansible:latest .
+
+Pusing the latest ANSIBLE CLIENT docker image to Docker Hub
+-----------------------------------------------------------
+  $ docker push robertbarrow/ubuntu-ansible
+
+Running the latest ANSBILE CLIENT docker image
+----------------------------------------------
+  $ docker run -it --name ansible-client robertbarrow/ubuntu-ansible:latest
+  root@843c9fe9b8cb:/#
+
+Installing the GNU Nano package
+-------------------------------
+  # apt install -y nano
+
+Add the IP address of your UBUNTU SERVER to the /etc/ansible/hosts file 
+-----------------------------------------------------------------------
+  # nano /etc/ansible/hosts
+  [docker]
+  ubuntu-server ansible-host=172.17.0.2
+
+Add the IP address of your UBUNTU SERVER to the /etc/hosts file
+---------------------------------------------------------------
+  # echo 172.17.0.2 ubuntu-server >> /etc/hosts
+
+Connect to the UBUNTU SERVER to obtain the ECDSA key
+----------------------------------------------------
+  # ssh ubuntu-server
+  The authenticity of host 'ubuntu-server (172.17.0.2)' can't be established.
+  ECDSA key fingerprint is SHA256:Q1BeKCSsazH0qEtdRgwkF/EaUXlFP2Y5YzsWozN/B88.
+  Are you sure you want to continue connecting (yes/no)? yes
+
+Type 'yes' to accept the fingerprint and then CTRL+C to abort / disconnect
+
+Test connectivity to the UBUNTU SERVER
+--------------------------------------
+  $ ansible docker -i hosts -m ping -k
+
+The password is 'ansible'
 
 
-nano test.yml # test playbook
+# cat test.yml
 ---
 - name: test playbook
   hosts: docker
