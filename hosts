@@ -1,2 +1,2 @@
 [docker]
-ubuntu-server ansible_host=172.17.0.3
+ubuntu-openssh ansible_host=172.17.0.3
