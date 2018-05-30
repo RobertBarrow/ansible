@@ -10,6 +10,7 @@ The images required to create these containers can be built using the Dockerfile
 
 For convenience there are also two public automated builds of these images hosted on Docker Hub, which can be pulled from my account.
 
+
 ## Using the images on Docker hub
 
 To create one or more containers running Ubuntu linux (with OpenSSH installed), you can pull down the latest "**ubuntu-openssh**" image from my account as follows:
@@ -63,6 +64,7 @@ Status: Downloaded newer image for robertbarrow/ansible:latest
 
 Now that you have the images, you can create your containers as follows...
 
+
 ## Creating Docker containers from the images
 
 To create a detached container running Ubuntu linux with OpenSSH installed:
@@ -78,7 +80,7 @@ $ docker run -d --name ubuntu-server-1 robertbarrow/ubuntu-openssh
 
 *Note: the string that gets returned is the **full** Container ID*
 
-To create an ephemeral container running Ubuntu linux with Ansible installed:
+To create an interactive container running Ubuntu linux with Ansible installed:
 
 ```docker run -it --rm robertbarrow/ansible```
 
@@ -99,6 +101,7 @@ exit
 
 *Note: the "**-it**" option makes it interactive (via a psuedo TTY session) and the "**--rm**" option removes the container from memory once you exit.
 
+
 ## To see which containers are still running
 
 The ```docker ps``` command will list the containers that you currently have running e.g.
@@ -109,7 +112,7 @@ CONTAINER ID        IMAGE                         COMMAND               CREATED 
 7e928a077440        robertbarrow/ubuntu-openssh   "/usr/sbin/sshd -D"   2 minutes ago       Up 2 minutes       22/tcp              ubuntu-server-1
 ```
 
-The **ubuntu-openssh** containers are detached, but still actively running the OpenSSH servive (listening on port 22).
+The **ubuntu-openssh** containers are detached, but still actively running the OpenSSH service [listening on port 22].
 
 Adding the "**-a**" option (i.e. ```docker ps -a```) will also list any stopped containers e.g.
 
