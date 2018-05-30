@@ -2,19 +2,15 @@
 
 In order to test Ansible you can create two Docker containers on your local machine.
 
-The first container will act as an example target server (running Ubuntu linux with OpenSSH installed).
-This can be built using the Dockerfile in the /ubuntu-openssh/ directory or just pulled from my account:
-
-```docker pull robertbarrow/ansible```
-
-Note: this is a public automated build image hosted on Docker Hub.
+The first container will act as an example target server e.g. running Ubuntu linux with OpenSSH installed.
 
 The second container will be used to do your Ansible testing e.g. run ad-hoc commands and test playbooks. 
-It is also based on Ubuntu linux and comes with Ansible pre-installed.
-This can be built using the Dockerfile in the /ubuntu-ansible/ directory or just pulled from my account:
+
+These two containers can be built using the Dockerfiles provided (in the "/ubuntu-openssh/" and "/ubuntu-ansible/" directories).
+
+For convenience there are also two public automated builds of these images hosted on Docker Hub, which can be pulled from my account:
 
 ```docker pull robertbarrow/ubuntu-openssh```
-
-Note: this is a public automated build image hosted on Docker Hub.
+```docker pull robertbarrow/ansible```
 
 
