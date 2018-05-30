@@ -1,0 +1,3 @@
+#!/bin/sh
+echo "[docker]"
+exec docker inspect -f '{{.Name}} {{.NetworkSettings.IPAddress }}' $(docker ps -aq) | cut -c2-
