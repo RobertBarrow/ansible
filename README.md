@@ -99,7 +99,7 @@ root@aad4dfb5aadf:/# exit
 exit
 ```
 
-*Note: the "**-it**" option makes it interactive (via a psuedo TTY session) and the "**--rm**" option removes the container from memory once you exit.
+*Note: the "**-it**" option provides you with the interactive prompt (via a psuedo TTY session) and the "**--rm**" option tells the Docker daemon to decompose the container [i.e. shut it down and remove it] once you've exited your interactive session.
 
 
 ## To see which containers are still running
@@ -123,5 +123,5 @@ CONTAINER ID        IMAGE                         COMMAND                  CREAT
 08d93e2796a6        tuned/python-35-rhel7         "container-entrypoint"   7 days ago          Exited (255) 3 hours ago   0.0.0.0:8080->8080/tcp   naughty_galileo
 ```
 
-As you can see, the **ansible** container is still not listed.  This is due to the "**--rm**" option that was used, which deleted the container after you exited from the interactive prompt.   The ephemeral nature of the **ansible** container means that it would only ever be listed by the ```docker ps``` command if; (**A**) you ran it from another session [whilst you were still at the interative prompt], or (**B**) if you ran the command as soon as you exited the interactive prompt and the Docker daemon hadn't finished removing it. 
+As you can see, the **ansible** container is still not listed.  This is due to the "**--rm**" option that was used, which deleted the container after you exited from the interactive prompt.   The ephemeral nature of the **ansible** container means that it would only ever be listed by the ```docker ps``` command if; (**A**) you ran it from another session [whilst you were still at the interactive prompt], or (**B**) if you ran the command as soon as you exited the container and the Docker daemon hadn't finished decomposing it.
 
