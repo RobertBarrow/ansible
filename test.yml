@@ -43,9 +43,9 @@
     command: python sb.py
     args:
       chdir: /cwp/python/
-      creates: /cwp/python/OUT.CSV
+      creates: /cwp/python/CWP_ANALYSIS.CSV
 
-  - name: download OUT.CSV 
+  - name: download CWP_ANALYSIS.CSV 
     fetch:
-      src: /cwp/python/OUT.CSV
-      dest: OUT.CSV
+      src: /cwp/python/CWP_ANALYSIS.CSV
+      dest: CWP_ANALYSIS.CSV
