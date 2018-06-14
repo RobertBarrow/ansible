@@ -99,7 +99,7 @@ root@aad4dfb5aadf:/# exit
 exit
 ```
 
-*Note: the "**-it**" option provides you with the interactive prompt (via a psuedo TTY session) and the "**--rm**" option tells the Docker daemon to decompose the container [i.e. shut it down and remove it] once you've exited your interactive session.
+*Note: the -**it** option provides you with the interactive prompt (via a psuedo TTY session) and the --**rm** option tells the Docker daemon to decompose the container [i.e. shut it down and remove it] once you've exited your interactive session.*
 
 
 ## To see which containers are still running
