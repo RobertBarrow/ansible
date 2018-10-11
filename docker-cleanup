@@ -1,2 +1,2 @@
 #!/bin/sh
-exec docker ps -aq | xargs -i -t docker rm {}
+exec docker rm -f $(docker ps -aq)
